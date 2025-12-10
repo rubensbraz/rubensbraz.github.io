@@ -26,6 +26,8 @@ body {
     background: var(--bg-gradient);
     /* Custom Retro Cursor */
     cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="white" stroke="black" d="M0 0l12 12-4 1 5 8-3 1-5-8-2 3z"/></svg>'), auto;
+    /* Prevent bouncy scroll on mobile */
+    touch-action: none;
 }
 
 /* --- Z-INDEX LAYERING STRATEGY ---
@@ -90,10 +92,12 @@ body {
 
 .boot-content {
     text-align: center;
+    width: 90%;
 }
 
 .loading-bar {
     width: 300px;
+    max-width: 100%;
     height: 20px;
     border: 2px solid var(--accent-pink);
     margin: 20px auto;
@@ -118,6 +122,7 @@ body {
     color: #fff;
     font-size: 3rem;
     text-shadow: 2px 2px var(--accent-pink), -2px -2px var(--accent-cyan);
+    word-wrap: break-word;
 }
 
 /* --- NAVIGATION BAR --- */
@@ -130,7 +135,7 @@ nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 10px;
+    padding: 0 5px;
     font-size: 1.4rem;
     position: relative;
     z-index: 5000;
@@ -138,33 +143,45 @@ nav {
 
 .nav-left {
     display: flex;
-    gap: 15px;
+    gap: 10px;
     align-items: center;
+    height: 100%;
 }
 
 .nav-right {
     display: flex;
     align-items: center;
-    gap: 15px;
-    padding-right: 10px;
+    gap: 10px;
+    padding-right: 5px;
 }
 
 .brand {
+    margin-left: 5px;
     font-weight: bold;
     background: #000;
     color: #fff;
-    padding: 2px 8px;
+    padding: 2px 6px;
+    display: flex;
+    align-items: center;
+    height: 70%;
+    font-size: 1.1rem;
+    gap: 8px;
 }
 
 .menu-item {
     position: relative;
     cursor: pointer;
-    padding: 0 10px;
+    padding: 0 8px;
+    height: 100%;
+    display: flex;
+    align-items: center;
 }
 
-.menu-item:hover {
+.menu-item:hover,
+.menu-item:focus {
     background: #000080;
     color: white;
+    outline: none;
 }
 
 .dropdown {
@@ -182,14 +199,17 @@ nav {
     z-index: 2000;
 }
 
+/* Open dropdown on hover OR focus (better for mobile taps) */
+.menu-item:hover .dropdown,
 .menu-item:focus-within .dropdown {
     display: block;
 }
 
 .dropdown div {
-    padding: 5px 10px;
+    padding: 10px;
     cursor: pointer;
     font-size: 1.2rem;
+    border-bottom: 1px dotted #888;
 }
 
 .dropdown div:hover {
@@ -204,7 +224,7 @@ nav {
     flex-direction: column;
     flex-wrap: wrap;
     height: calc(100vh - 40px);
-    gap: 20px;
+    gap: 10px;
     align-content: flex-start;
     position: relative;
     z-index: 10;
@@ -216,6 +236,8 @@ nav {
     cursor: pointer;
     color: white;
     text-shadow: 2px 2px 0 #000;
+    margin-bottom: 10px;
+    padding: 5px;
 }
 
 .icon-img {
@@ -232,8 +254,9 @@ nav {
 
 .icon-label {
     background: rgba(0, 0, 0, 0.6);
-    padding: 2px;
-    font-size: 1.1rem;
+    padding: 2px 4px;
+    font-size: 1rem;
+    border-radius: 2px;
 }
 
 /* --- WINDOW SYSTEM --- */
@@ -246,6 +269,7 @@ nav {
     display: flex;
     flex-direction: column;
     min-width: 300px;
+    max-width: 95vw;
     animation: popIn 0.2s ease-out;
 }
 
@@ -263,7 +287,7 @@ nav {
 
 .title-bar {
     background: var(--win-header);
-    padding: 5px;
+    padding: 8px 5px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -273,20 +297,22 @@ nav {
     text-shadow: 2px 2px 0 #000;
     cursor: grab;
     user-select: none;
+    touch-action: none;
 }
 
 .btn-close {
     background: #c0c0c0;
     border: 2px solid;
     border-color: var(--win-border-light) var(--win-border-dark) var(--win-border-dark) var(--win-border-light);
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
     font-weight: bold;
     cursor: pointer;
     color: black;
     display: flex;
     align-items: center;
     justify-content: center;
+    font-family: sans-serif;
 }
 
 .btn-close:active {
@@ -317,12 +343,14 @@ nav {
     text-align: right;
     padding: 5px;
     border: inset 2px;
+    width: 100%;
 }
 
 .calc-grid button {
-    padding: 10px;
+    padding: 15px 10px;
     font-family: var(--font-header);
     cursor: pointer;
+    font-size: 1.2rem;
 }
 
 .btn-eq {
@@ -337,6 +365,7 @@ nav {
 /* --- APP: CALENDAR --- */
 .calendar-wrapper {
     text-align: center;
+    width: 100%;
 }
 
 #cal-month {
@@ -353,7 +382,7 @@ nav {
 }
 
 .cal-day {
-    padding: 5px;
+    padding: 10px;
     background: #fff;
     border: 1px solid #ccc;
 }
@@ -370,7 +399,7 @@ nav {
     padding: 10px;
     border: 2px solid #505050;
     color: #0f0;
-    width: 320px;
+    width: 100%;
 }
 
 .music-display {
@@ -413,8 +442,8 @@ nav {
 .music-controls button {
     background: #c0c0c0;
     border: 2px outset #fff;
-    width: 40px;
-    height: 30px;
+    width: 50px;
+    height: 40px;
     cursor: pointer;
 }
 
@@ -449,6 +478,7 @@ nav {
     flex-direction: column;
     align-items: center;
     gap: 10px;
+    width: 100%;
 }
 
 .paint-toolbar {
@@ -463,13 +493,16 @@ nav {
 
 .paint-tools-row {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
+    gap: 5px;
 }
 
 .color-picker {
     display: flex;
     gap: 3px;
+    flex-wrap: wrap;
 }
 
 .color-swatch {
@@ -485,8 +518,8 @@ nav {
 }
 
 .tools-actions button {
-    width: 30px;
-    height: 30px;
+    width: 35px;
+    height: 35px;
     cursor: pointer;
     background: #e0e0e0;
     border: 2px outset white;
@@ -514,12 +547,14 @@ nav {
     border: 2px inset #808080;
     cursor: crosshair;
     image-rendering: pixelated;
+    max-width: 100%;
+    touch-action: none;
 }
 
 /* --- SHARED: FOLDERS --- */
 .folder-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
     gap: 15px;
     text-align: center;
 }
@@ -529,6 +564,9 @@ nav {
     text-decoration: none;
     padding: 10px;
     border: 1px dotted transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .folder-item:hover {
@@ -541,4 +579,41 @@ nav {
     display: block;
     margin-bottom: 5px;
     color: #440044;
+}
+
+/* --- MOBILE RESPONSIVENESS --- */
+@media (max-width: 768px) {
+
+    /* Logo Size */
+    .glitch {
+        font-size: 1.8rem;
+    }
+
+    /* Nav Layout */
+    nav {
+        font-size: 1rem;
+        padding: 0 2px;
+    }
+
+    .brand {
+        font-size: 0.9rem;
+        padding: 2px 4px;
+    }
+
+    .nav-left {
+        gap: 5px;
+    }
+
+    /* Windows adaptive positioning */
+    /* Override JS random pos on mobile */
+    .window {
+        min-width: 280px;
+        width: 90vw;
+        left: 5vw !important;
+    }
+
+    /* Paint Toolbar adjust */
+    .paint-tools-row {
+        justify-content: center;
+    }
 }

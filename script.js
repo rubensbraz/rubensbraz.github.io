@@ -231,11 +231,17 @@ class WindowManager {
         win.className = 'window active';
         win.style.zIndex = this.zIndex;
 
-        // Random positioning logic to prevent perfect stacking
-        const randX = Math.floor(Math.random() * 50) + 50; // 50px offset
-        const randY = Math.floor(Math.random() * 50) + 50;
-        win.style.left = randX + 'px';
-        win.style.top = randY + 'px';
+        // Smart Positioning for Mobile vs Desktop
+        const isMobile = window.innerWidth < 768;
+        if (isMobile) {
+            win.style.left = '5vw';
+            win.style.top = '10vh';
+        } else {
+            const randX = Math.floor(Math.random() * 50) + 50;
+            const randY = Math.floor(Math.random() * 50) + 50;
+            win.style.left = randX + 'px';
+            win.style.top = randY + 'px';
+        }
 
         win.innerHTML = `
             <div class="title-bar">
@@ -258,6 +264,11 @@ class WindowManager {
             this.zIndex++;
             win.style.zIndex = this.zIndex;
         });
+        // Handle touch focus
+        win.addEventListener('touchstart', () => {
+            this.zIndex++;
+            win.style.zIndex = this.zIndex;
+        }, { passive: true });
 
         this.makeDraggable(win);
         this.container.appendChild(win);
@@ -272,7 +283,8 @@ class WindowManager {
         const header = el.querySelector('.title-bar');
         let isDragging = false, startX, startY, initialLeft, initialTop;
 
-        const onMove = (e) => {
+        // --- MOUSE EVENTS ---
+        const onMouseMove = (e) => {
             if (!isDragging) return;
             const dx = e.clientX - startX;
             const dy = e.clientY - startY;
@@ -280,10 +292,10 @@ class WindowManager {
             el.style.top = `${initialTop + dy}px`;
         };
 
-        const onUp = () => {
+        const onMouseUp = () => {
             isDragging = false;
-            document.removeEventListener('mousemove', onMove);
-            document.removeEventListener('mouseup', onUp);
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
         };
 
         header.addEventListener('mousedown', (e) => {
@@ -292,9 +304,38 @@ class WindowManager {
             startY = e.clientY;
             initialLeft = el.offsetLeft;
             initialTop = el.offsetTop;
-            document.addEventListener('mousemove', onMove);
-            document.addEventListener('mouseup', onUp);
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
         });
+
+        // --- TOUCH EVENTS ---
+        const onTouchMove = (e) => {
+            if (!isDragging) return;
+            // Prevent scrolling the page while dragging the window
+            e.preventDefault();
+            const touch = e.touches[0];
+            const dx = touch.clientX - startX;
+            const dy = touch.clientY - startY;
+            el.style.left = `${initialLeft + dx}px`;
+            el.style.top = `${initialTop + dy}px`;
+        };
+
+        const onTouchEnd = () => {
+            isDragging = false;
+            document.removeEventListener('touchmove', onTouchMove);
+            document.removeEventListener('touchend', onTouchEnd);
+        };
+
+        header.addEventListener('touchstart', (e) => {
+            isDragging = true;
+            const touch = e.touches[0];
+            startX = touch.clientX;
+            startY = touch.clientY;
+            initialLeft = el.offsetLeft;
+            initialTop = el.offsetTop;
+            document.addEventListener('touchmove', onTouchMove, { passive: false });
+            document.addEventListener('touchend', onTouchEnd);
+        }, { passive: false });
     }
 }
 
@@ -591,15 +632,32 @@ class PaintApp {
         this.lineWidth = 3;
         this.tool = 'brush';
 
-        // Canvas Configuration for smooth lines
+        // Dynamic Canvas Sizing
+        this.resizeCanvas();
+
         this.ctx.lineCap = 'round';
         this.ctx.lineJoin = 'round';
-
-        // Initialize canvas with white background (crucial for saving as JPG/PNG without transparency)
-        this.ctx.fillStyle = '#ffffff';
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        this.clearCanvas();
 
         this.setupEvents(windowEl);
+    }
+
+    /**
+     * Sets canvas size based on the current window width to prevent layout breaking on mobile.
+     */
+    resizeCanvas() {
+        // Desktop default: 400x300. Mobile: 90% of screen width.
+        const maxWidth = Math.min(400, window.innerWidth - 60);
+        this.canvas.width = maxWidth;
+        this.canvas.height = 300;
+    }
+
+    /**
+     * Clear canvas.
+     */
+    clearCanvas() {
+        this.ctx.fillStyle = '#ffffff';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
     }
 
     /**
@@ -630,9 +688,7 @@ class PaintApp {
 
         // Clear Canvas
         win.querySelector('#btn-clear-paint').addEventListener('click', () => {
-            // Confirm before clearing? Maybe later. For now, just clear.
-            this.ctx.fillStyle = '#ffffff';
-            this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+            this.clearCanvas();
         });
 
         // Save Image
@@ -648,11 +704,37 @@ class PaintApp {
             this.lineWidth = e.target.value;
         });
 
-        // Mouse Event Listeners for Drawing
+        // Mouse Events
         this.canvas.addEventListener('mousedown', (e) => this.startDraw(e));
         this.canvas.addEventListener('mousemove', (e) => this.draw(e));
         this.canvas.addEventListener('mouseup', () => this.stopDraw());
         this.canvas.addEventListener('mouseleave', () => this.stopDraw());
+
+        // Touch Events (For Mobile)
+        this.canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // Prevent scrolling while drawing
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent("mousedown", {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            this.canvas.dispatchEvent(mouseEvent);
+        }, { passive: false });
+
+        this.canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent("mousemove", {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            this.canvas.dispatchEvent(mouseEvent);
+        }, { passive: false });
+
+        this.canvas.addEventListener('touchend', () => {
+            const mouseEvent = new MouseEvent("mouseup", {});
+            this.canvas.dispatchEvent(mouseEvent);
+        });
     }
 
     /**
