@@ -1,0 +1,54 @@
+{
+    "user": {
+        "name": "Rubens Braz",
+        "role": "Electrical and Software Engineer",
+        "email": "contato@rubensbraz.com",
+        "github": "https://github.com/rubensbraz/vapor-site"
+    },
+    "folders": {
+        "projects": [
+            {
+                "name": "Calcule Tudo",
+                "url": "https://calculetudo.com.br/",
+                "icon": "fa-solid fa-calculator"
+            },
+            {
+                "name": "Avicultura Gigante",
+                "url": "https://aviculturagigante.com/",
+                "icon": "fa-solid fa-egg"
+            },
+            {
+                "name": "Mar Coletivo",
+                "url": "https://mar.coletivo.eco.br/",
+                "icon": "fa-solid fa-water"
+            }
+        ],
+        "links": [
+            {
+                "name": "My Website",
+                "url": "https://rubensbraz.com/site",
+                "icon": "fa-solid fa-globe"
+            },
+            {
+                "name": "Blog",
+                "url": "https://rubensbraz.com/blog/",
+                "icon": "fa-solid fa-rss"
+            },
+            {
+                "name": "Curriculum",
+                "url": "https://rubensbraz.com/site/cv/",
+                "icon": "fa-solid fa-file-pdf"
+            },
+            {
+                "name": "LinkedIn",
+                "url": "https://www.linkedin.com/in/rubensbraz/",
+                "icon": "fa-brands fa-linkedin"
+            },
+            {
+                "name": "GitHub",
+                "url": "https://github.com/rubensbraz/",
+                "icon": "fa-brands fa-github"
+            }
+        ]
+    }
+}

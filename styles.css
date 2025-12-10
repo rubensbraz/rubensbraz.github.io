@@ -1,0 +1,544 @@
+:root {
+    /* --- VAPORWAVE COLOR PALETTE --- */
+    --bg-color: #1a1a2e;
+    --bg-gradient: linear-gradient(135deg, #2b1055, #7597de);
+    --win-bg: rgba(224, 224, 224, 0.95);
+    --win-header: linear-gradient(90deg, #ff00ff, #00ffff);
+    --win-border-light: #fff;
+    --win-border-dark: #404040;
+    --accent-pink: #ff00ff;
+    --accent-cyan: #00ffff;
+    --font-ui: 'VT323', monospace;
+    --font-header: 'Press Start 2P', cursive;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-ui);
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    background: var(--bg-gradient);
+    /* Custom Retro Cursor */
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="white" stroke="black" d="M0 0l12 12-4 1 5 8-3 1-5-8-2 3z"/></svg>'), auto;
+}
+
+/* --- Z-INDEX LAYERING STRATEGY ---
+   0: Matrix Canvas (Background)
+   10: Desktop Icons
+   100+: Windows (Dynamic)
+   2000: Dropdown Menus
+   5000: Taskbar/Nav
+   9999: CRT Overlay
+   10000: Boot Screen
+*/
+
+/* --- MATRIX EFFECT LAYER --- */
+#matrix-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    display: none;
+    background: black;
+}
+
+.matrix-active #matrix-canvas {
+    display: block;
+}
+
+/* --- CRT OVERLAY EFFECT --- */
+.crt-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    background-size: 100% 3px, 3px 100%;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 1;
+    transition: opacity 0.5s;
+}
+
+.crt-off {
+    opacity: 0;
+}
+
+/* --- BOOT SCREEN --- */
+#boot-screen {
+    position: fixed;
+    z-index: 10000;
+    background: #000;
+    color: var(--accent-cyan);
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+}
+
+.boot-content {
+    text-align: center;
+}
+
+.loading-bar {
+    width: 300px;
+    height: 20px;
+    border: 2px solid var(--accent-pink);
+    margin: 20px auto;
+    padding: 2px;
+}
+
+.progress {
+    height: 100%;
+    background: var(--accent-pink);
+    width: 0%;
+    animation: load 2.5s forwards;
+}
+
+@keyframes load {
+    to {
+        width: 100%;
+    }
+}
+
+.glitch {
+    font-family: var(--font-header);
+    color: #fff;
+    font-size: 3rem;
+    text-shadow: 2px 2px var(--accent-pink), -2px -2px var(--accent-cyan);
+}
+
+/* --- NAVIGATION BAR --- */
+nav {
+    height: 40px;
+    background: #c0c0c0;
+    border-top: 2px solid var(--win-border-light);
+    border-bottom: 2px solid var(--win-border-dark);
+    box-shadow: 0 4px 5px rgba(0, 0, 0, 0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+    font-size: 1.4rem;
+    position: relative;
+    z-index: 5000;
+}
+
+.nav-left {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding-right: 10px;
+}
+
+.brand {
+    font-weight: bold;
+    background: #000;
+    color: #fff;
+    padding: 2px 8px;
+}
+
+.menu-item {
+    position: relative;
+    cursor: pointer;
+    padding: 0 10px;
+}
+
+.menu-item:hover {
+    background: #000080;
+    color: white;
+}
+
+.dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: #c0c0c0;
+    border: 2px solid var(--win-border-light);
+    border-right-color: var(--win-border-dark);
+    border-bottom-color: var(--win-border-dark);
+    color: black;
+    min-width: 150px;
+    box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.5);
+    z-index: 2000;
+}
+
+.menu-item:focus-within .dropdown {
+    display: block;
+}
+
+.dropdown div {
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 1.2rem;
+}
+
+.dropdown div:hover {
+    background: #000080;
+    color: white;
+}
+
+/* --- DESKTOP ICONS --- */
+.icons-container {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    height: calc(100vh - 40px);
+    gap: 20px;
+    align-content: flex-start;
+    position: relative;
+    z-index: 10;
+}
+
+.desktop-icon {
+    width: 80px;
+    text-align: center;
+    cursor: pointer;
+    color: white;
+    text-shadow: 2px 2px 0 #000;
+}
+
+.icon-img {
+    font-size: 2.5rem;
+    margin-bottom: 5px;
+    transition: transform 0.2s;
+    color: var(--accent-cyan);
+    filter: drop-shadow(0 0 5px var(--accent-pink));
+}
+
+.desktop-icon:hover .icon-img {
+    transform: scale(1.2) rotate(-5deg);
+}
+
+.icon-label {
+    background: rgba(0, 0, 0, 0.6);
+    padding: 2px;
+    font-size: 1.1rem;
+}
+
+/* --- WINDOW SYSTEM --- */
+.window {
+    position: absolute;
+    background: var(--win-bg);
+    border: 2px solid;
+    border-color: var(--win-border-light) var(--win-border-dark) var(--win-border-dark) var(--win-border-light);
+    box-shadow: 5px 5px 0px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    min-width: 300px;
+    animation: popIn 0.2s ease-out;
+}
+
+@keyframes popIn {
+    from {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.title-bar {
+    background: var(--win-header);
+    padding: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    font-family: var(--font-header);
+    font-size: 0.8rem;
+    text-shadow: 2px 2px 0 #000;
+    cursor: grab;
+    user-select: none;
+}
+
+.btn-close {
+    background: #c0c0c0;
+    border: 2px solid;
+    border-color: var(--win-border-light) var(--win-border-dark) var(--win-border-dark) var(--win-border-light);
+    width: 20px;
+    height: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    color: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-close:active {
+    border-color: var(--win-border-dark) var(--win-border-light) var(--win-border-light) var(--win-border-dark);
+}
+
+.window-content {
+    padding: 15px;
+    overflow-y: auto;
+    max-height: 70vh;
+    color: black;
+    font-size: 1.3rem;
+}
+
+/* --- APP: CALCULATOR --- */
+.calc-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+}
+
+.calc-display {
+    grid-column: span 4;
+    background: #000;
+    color: #0f0;
+    font-family: 'VT323';
+    font-size: 2rem;
+    text-align: right;
+    padding: 5px;
+    border: inset 2px;
+}
+
+.calc-grid button {
+    padding: 10px;
+    font-family: var(--font-header);
+    cursor: pointer;
+}
+
+.btn-eq {
+    background: var(--accent-cyan);
+}
+
+.btn-clear {
+    background: var(--accent-pink);
+    color: white;
+}
+
+/* --- APP: CALENDAR --- */
+.calendar-wrapper {
+    text-align: center;
+}
+
+#cal-month {
+    background: #000080;
+    color: white;
+    padding: 5px;
+}
+
+.cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    margin-top: 5px;
+}
+
+.cal-day {
+    padding: 5px;
+    background: #fff;
+    border: 1px solid #ccc;
+}
+
+.cal-today {
+    background: var(--accent-pink);
+    color: white;
+    font-weight: bold;
+}
+
+/* --- APP: WINAMP (MUSIC) --- */
+.music-player {
+    background: #202020;
+    padding: 10px;
+    border: 2px solid #505050;
+    color: #0f0;
+    width: 320px;
+}
+
+.music-display {
+    background: #000;
+    border: 2px inset #505050;
+    padding: 10px;
+    font-family: 'VT323';
+    font-size: 1.2rem;
+    color: #00ff00;
+    margin-bottom: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+/* Spectrum Visualizer */
+.visualizer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    height: 40px;
+    margin-bottom: 10px;
+    background: #111;
+    padding: 2px;
+    border: 1px solid #333;
+}
+
+.bar {
+    width: 7%;
+    background: linear-gradient(to top, #0f0, #ff0, #f00);
+    height: 5%;
+    transition: height 0.1s ease;
+}
+
+.music-controls {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 10px;
+}
+
+.music-controls button {
+    background: #c0c0c0;
+    border: 2px outset #fff;
+    width: 40px;
+    height: 30px;
+    cursor: pointer;
+}
+
+.music-controls button:active {
+    border-style: inset;
+}
+
+.volume-control {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: white;
+    font-size: 1rem;
+}
+
+.volume-control input {
+    flex: 1;
+    accent-color: var(--accent-pink);
+}
+
+.hidden-player {
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+}
+
+/* --- APP: PAINT --- */
+.paint-app {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.paint-toolbar {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    background: #c0c0c0;
+    padding: 5px;
+    border: 2px outset white;
+}
+
+.paint-tools-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.color-picker {
+    display: flex;
+    gap: 3px;
+}
+
+.color-swatch {
+    width: 25px;
+    height: 25px;
+    border: 2px solid #808080;
+    cursor: pointer;
+}
+
+.color-swatch.active {
+    border: 2px solid #000;
+    outline: 1px dashed white;
+}
+
+.tools-actions button {
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    background: #e0e0e0;
+    border: 2px outset white;
+}
+
+.tools-actions button:active,
+.tools-actions button.tool-active {
+    border: 2px inset white;
+    background: #999;
+}
+
+.brush-size-control {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.9rem;
+}
+
+.brush-size-control input {
+    flex: 1;
+}
+
+#paint-canvas {
+    background: #fff;
+    border: 2px inset #808080;
+    cursor: crosshair;
+    image-rendering: pixelated;
+}
+
+/* --- SHARED: FOLDERS --- */
+.folder-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    text-align: center;
+}
+
+.folder-item {
+    color: black;
+    text-decoration: none;
+    padding: 10px;
+    border: 1px dotted transparent;
+}
+
+.folder-item:hover {
+    border: 1px dotted black;
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.folder-item i {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 5px;
+    color: #440044;
+}

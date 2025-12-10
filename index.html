@@ -1,7 +1,164 @@
 <!DOCTYPE html>
-<html>
-	<body>
-		<h1>Hello World</h1>
-		<meta http-equiv="refresh" content="1; URL='https://www.rubensbraz.com'"/>
-	</body>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>RubensOS | Vapor Edition</title>
+        <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill="%23FF00FF" d="M3 3h10v10H3z"/><path fill="%2300FFFF" d="M5 5h2v2H5zm4 0h2v2H9zm-2 4h4v2H7z"/></svg>'>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <link rel="stylesheet" href="styles.css">
+    </head>
+
+    <body>
+        <canvas id="matrix-canvas"></canvas>
+        <div class="crt-overlay" id="crt-layer"></div>
+        <div id="boot-screen">
+            <div class="boot-content">
+                <h1 class="glitch" data-text="RUBENS_OS">RUBENS_OS</h1>
+                <p>VAPORWAVE EDITION v1.0</p>
+                <div class="loading-bar">
+                    <div class="progress"></div>
+                </div>
+                <ul class="boot-log">
+                    <li>> Mounting /dev/retro... OK</li>
+                    <li>> Loading aesthetics... OK</li>
+                    <li>> Initializing vibes... OK</li>
+                </ul>
+            </div>
+        </div>
+        <main class="desktop">
+            <nav>
+                <div class="nav-left">
+                    <div class="brand"><i class="fa-solid fa-floppy-disk"></i> Start</div>
+                    <div class="menu-item" tabindex="0">
+                        <span>File</span>
+                        <div class="dropdown">
+                            <div id="action-reboot">Reboot System</div>
+                            <div id="action-repo">Source Code</div>
+                        </div>
+                    </div>
+                    <div class="menu-item" tabindex="0">
+                        <span>View</span>
+                        <div class="dropdown">
+                            <div id="action-crt">Toggle CRT</div>
+                            <div id="action-fullscreen">Fullscreen</div>
+                        </div>
+                    </div>
+                    <div class="menu-item" tabindex="0">
+                        <span>Help</span>
+                        <div class="dropdown">
+                            <div id="action-about">About OS</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="nav-right">
+                    <span id="wifi-icon"><i class="fa-solid fa-wifi"></i></span>
+                    <div class="clock" id="clock">00:00</div>
+                </div>
+            </nav>
+            <div class="icons-container" id="icon-grid">
+                <div class="desktop-icon" data-app="calculator">
+                    <div class="icon-img icon-calc"><i class="fa-solid fa-calculator"></i></div>
+                    <span class="icon-label">Calculator</span>
+                </div>
+                <div class="desktop-icon" data-app="calendar">
+                    <div class="icon-img icon-cal"><i class="fa-regular fa-calendar-days"></i></div>
+                    <span class="icon-label">Calendar</span>
+                </div>
+                <div class="desktop-icon" data-app="music">
+                    <div class="icon-img icon-music"><i class="fa-solid fa-music"></i></div>
+                    <span class="icon-label">WinAmp</span>
+                </div>
+                <div class="desktop-icon" data-app="paint">
+                    <div class="icon-img icon-paint"><i class="fa-solid fa-paintbrush"></i></div>
+                    <span class="icon-label">Paint</span>
+                </div>
+            </div>
+            <div id="window-area"></div>
+        </main>
+        <template id="tpl-calculator">
+            <div class="calc-grid">
+                <input type="text" class="calc-display" readonly>
+                <button class="btn-clear">C</button>
+                <button>/</button>
+                <button>*</button>
+                <button class="btn-back">←</button>
+                <button>7</button><button>8</button><button>9</button><button>-</button>
+                <button>4</button><button>5</button><button>6</button><button>+</button>
+                <button>1</button><button>2</button><button>3</button><button class="btn-eq">=</button>
+                <button class="btn-zero">0</button><button>.</button>
+            </div>
+        </template>
+        <template id="tpl-calendar">
+            <div class="calendar-wrapper">
+                <h2 id="cal-month"></h2>
+                <div class="cal-grid" id="cal-days"></div>
+            </div>
+        </template>
+        <template id="tpl-music">
+            <div class="music-player">
+                <div class="music-display">
+                    <marquee scrollamount="4">MACINTOSH PLUS - FLORAL SHOPPE (Full Album) [YouTube]</marquee>
+                </div>
+                <div class="visualizer" id="winamp-viz">
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                </div>
+                <div class="music-controls">
+                    <button id="btn-play" title="Play"><i class="fa-solid fa-play"></i></button>
+                    <button id="btn-pause" title="Pause"><i class="fa-solid fa-pause"></i></button>
+                    <button id="btn-stop" title="Stop"><i class="fa-solid fa-stop"></i></button>
+                </div>
+                <div class="volume-control">
+                    <span>Vol:</span>
+                    <input type="range" min="0" max="100" value="50" id="vol-slider">
+                </div>
+                <div id="youtube-player-hidden" class="hidden-player"></div>
+            </div>
+        </template>
+        <template id="tpl-paint">
+            <div class="paint-app">
+                <div class="paint-toolbar">
+                    <div class="paint-tools-row">
+                        <div class="color-picker">
+                            <div class="color-swatch active" style="background: #000;" data-color="#000" title="Black"></div>
+                            <div class="color-swatch" style="background: #fff;" data-color="#fff" title="White"></div>
+                            <div class="color-swatch" style="background: #ff00ff;" data-color="#ff00ff" title="Hot Pink"></div>
+                            <div class="color-swatch" style="background: #00ffff;" data-color="#00ffff" title="Cyan"></div>
+                            <div class="color-swatch" style="background: #ffff00;" data-color="#ffff00" title="Yellow"></div>
+                            <div class="color-swatch" style="background: #0000ff;" data-color="#0000ff" title="Blue"></div>
+                        </div>
+                        <div class="tools-actions">
+                            <button id="btn-brush" class="tool-active" title="Brush"><i class="fa-solid fa-paintbrush"></i></button>
+                            <button id="btn-eraser" title="Eraser"><i class="fa-solid fa-eraser"></i></button>
+                            <button id="btn-clear-paint" title="Clear Canvas"><i class="fa-solid fa-trash"></i></button>
+                            <button id="btn-save-paint" title="Save PNG"><i class="fa-solid fa-floppy-disk"></i></button>
+                        </div>
+                    </div>
+                    <div class="brush-size-control">
+                        <span>Size:</span>
+                        <input type="range" id="brush-size" min="1" max="20" value="3">
+                    </div>
+                </div>
+                <canvas id="paint-canvas" width="400" height="300"></canvas>
+            </div>
+        </template>
+        <script src="https://www.youtube.com/iframe_api"></script>
+        <script src="script.js"></script>
+    </body>
+
 </html>
