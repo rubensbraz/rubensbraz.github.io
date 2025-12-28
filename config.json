@@ -1,9 +1,9 @@
 {
     "user": {
         "name": "Rubens Braz",
-        "role": "Electrical and Software Engineer",
+        "role": "Electrical and Software Eng. | Industrial Innovation Analyst | Data Specialist",
         "email": "contato@rubensbraz.com",
-        "github": "https://github.com/rubensbraz/vapor-site"
+        "github": "https://github.com/rubensbraz/rubensbraz.github.io"
     },
     "folders": {
         "projects": [
@@ -26,7 +26,7 @@
         "links": [
             {
                 "name": "My Website",
-                "url": "https://rubensbraz.com/site",
+                "url": "https://rubensbraz.com",
                 "icon": "fa-solid fa-globe"
             },
             {
@@ -36,7 +36,7 @@
             },
             {
                 "name": "Curriculum",
-                "url": "https://rubensbraz.com/site/cv/",
+                "url": "https://rubensbraz.com#cv",
                 "icon": "fa-solid fa-file-pdf"
             },
             {
